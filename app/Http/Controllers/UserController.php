@@ -9,8 +9,16 @@ class UserController extends Controller
 {
     public function index()
     {
+        $query = User::query();
+
+        if(request()->q) {
+            $query->where('name', 'LIKE', '%'.request()->q.'%')
+                ->orWhere('email', 'LIKE', '%'.request()->q.'%')
+                ->orWhere('username', 'LIKE', '%'.request()->q.'%');
+        }
+
         $users = (
-            UserResource::collection(User::paginate(request()->load))
+            UserResource::collection($query->paginate(request()->load))
         )->additional([
                 'attributes' => [
                       'total' => User::count(),
@@ -18,7 +26,9 @@ class UserController extends Controller
                 ],
                 'filtered' => [
                     'load' => request()->load ?? 10,
-                ]
+                    'q' => request()->q ?? '',
+                    'page' => request()->page ?? 1,
+                ],
             ]);
 
         return inertia('Users/Index', [

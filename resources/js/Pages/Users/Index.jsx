@@ -12,7 +12,10 @@ export default function Users({ auth }) {
         debounce((query) => {
             router.get(
                 route('users.index'),
-                pickBy(query),
+                {
+                    ...pickBy(query),
+                    page: query.q ? 1 : query.page,
+                },
                 {
                     preserveState: true,
                 }
@@ -26,7 +29,7 @@ export default function Users({ auth }) {
 
     useEffect(() => {
         let numbers = [];
-        for(let i = attributes.per_page; i <= meta.total / attributes.per_page; i = i+attributes.per_page) {
+        for(let i = attributes.per_page; i <= attributes.total / attributes.per_page; i = i+attributes.per_page) {
             numbers.push(i);
         }
         setPageNumber(numbers);
@@ -43,18 +46,28 @@ export default function Users({ auth }) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
                     <div className="flex items-center justify-end">
                         <div className="w-1/2">
-                            <select
-                                name='load'
-                                id='load'
-                                onChange={onChange}
-                                value={params.load}
-                                className="form-select"
-                            >
-                                {pageNumber.map((page, index) => <option key={index} value={page}>{page}</option>)}
-                            </select>
+                            <div className="flex items-center gap-x-2">
+                                <select
+                                    name='load'
+                                    id='load'
+                                    onChange={onChange}
+                                    value={params.load}
+                                    className="rounded-lg border-gray-300 focus:ring-blue-200 focus:ring transition duration-150 ease-in form-select"
+                                >
+                                    {pageNumber.map((page, index) => <option key={index} value={page}>{page}</option>)}
+                                </select>
+                                <input
+                                    type="text"
+                                    name="q"
+                                    id="q"
+                                    onChange={onChange}
+                                    className="rounded-lg border-gray-300 focus:ring-blue-200 focus:ring transition duration-150 ease-in form-text w-full"
+                                    value={params.q}
+                                    placeholder="Cari apapun itu..."
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -73,7 +86,7 @@ export default function Users({ auth }) {
                                     Name
                                 </th>
                                 <th scope="col" className="px-6 py-3">
-                                    Email
+                                Email
                                 </th>
                                 <th scope="col" className="px-6 py-3">
                                     Address
@@ -114,14 +127,13 @@ export default function Users({ auth }) {
 
                     <ul className="flex items-center gap-x-1 mt-10">
                         {meta.links.map((item, index) => (
-                            <Link
-                                key={index}
+                            <button
                                 disabled={item.url == null ? true : false}
                                 className={`${item.url == null ? 'text-gray-500 cursor-not-allowed' : 'text-gray-800'} w-16 h-9 rounded-lg flex items-center justify-center border bg-white`}
-                                href={item.url || ''}
-                                dangerouslySetInnerHTML={{__html:item.label}}
-                                as="button"
-                            />
+                                onClick={() => setParams({...params, page: new URL(item.url).searchParams.get('page')})}
+                            >
+                                {item.label}
+                            </button>
                         ))}
                     </ul>
 
