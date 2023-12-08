@@ -9,6 +9,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        return UserResource::collection(User::paginate(10));
+        $users = UserResource::collection(User::paginate(10));
+
+        return inertia('Users/Index', [
+            'users' => $users,
+        ]);
     }
 }
