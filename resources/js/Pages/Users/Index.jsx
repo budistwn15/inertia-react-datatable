@@ -1,8 +1,39 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link, usePage} from '@inertiajs/react';
+import {Head, Link, router, usePage} from '@inertiajs/react';
+import {useCallback, useEffect, useState} from "react";
+import {debounce, pickBy} from "lodash";
 
 export default function Users({ auth }) {
-    const {data: users, meta, link} = usePage().props.users;
+    const {data: users, meta, filtered, attributes} = usePage().props.users;
+    const [params, setParams] = useState(filtered);
+    const [pageNumber, setPageNumber] = useState([]);
+
+    const reload = useCallback(
+        debounce((query) => {
+            router.get(
+                route('users.index'),
+                pickBy(query),
+                {
+                    preserveState: true,
+                }
+            )
+        }, 150)
+        ,
+        []
+    );
+
+    useEffect(() => reload(params), [params]);
+
+    useEffect(() => {
+        let numbers = [];
+        for(let i = attributes.per_page; i <= meta.total / attributes.per_page; i = i+attributes.per_page) {
+            numbers.push(i);
+        }
+        setPageNumber(numbers);
+    }, [attributes.per_page, meta.total])
+
+    const onChange = (event) => setParams({...params, [event.target.name]: event.target.value})
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -12,7 +43,22 @@ export default function Users({ auth }) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="relative overflow-x-auto">
+
+                    <div className="flex items-center justify-end">
+                        <div className="w-1/2">
+                            <select
+                                name='load'
+                                id='load'
+                                onChange={onChange}
+                                value={params.load}
+                                className="form-select"
+                            >
+                                {pageNumber.map((page, index) => <option key={index} value={page}>{page}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="relative overflow-x-auto mt-10">
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead
                                 className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
