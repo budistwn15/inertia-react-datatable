@@ -18,6 +18,7 @@ export default function Users({ auth }) {
                 },
                 {
                     preserveState: true,
+                    preserveScroll: true,
                 }
             )
         }, 150)
@@ -36,6 +37,13 @@ export default function Users({ auth }) {
     }, [attributes.per_page, meta.total])
 
     const onChange = (event) => setParams({...params, [event.target.name]: event.target.value})
+    const sort = (item) => {
+        setParams({
+            ...params,
+            field: item,
+            direction: params.direction === 'asc' ? 'desc' : 'asc',
+        });
+    }
 
     return (
         <AuthenticatedLayout
@@ -80,13 +88,57 @@ export default function Users({ auth }) {
                                     No
                                 </th>
                                 <th scope="col" className="px-6 py-3">
-                                    Username
+                                    <div className="cursor-pointer flex items-center gap-x-2" onClick={() => sort('username')}>
+                                        Username
+                                        {params.direction === 'asc'
+                                            ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
+                                            </svg>
+                                            : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                                            </svg>
+                                        }
+                                    </div>
                                 </th>
                                 <th scope="col" className="px-6 py-3">
-                                    Name
+                                    <div className="cursor-pointer flex items-center gap-x-2"
+                                         onClick={() => sort('name')}>
+                                        Name
+                                        {params.direction === 'asc'
+                                            ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                   strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
+                                            </svg>
+                                            : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                   strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                                            </svg>
+                                        }
+                                    </div>
                                 </th>
                                 <th scope="col" className="px-6 py-3">
-                                Email
+                                    <div className="cursor-pointer flex items-center gap-x-2"
+                                         onClick={() => sort('email')}>
+                                        Email
+                                        {params.direction === 'asc'
+                                            ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                   strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
+                                            </svg>
+                                            : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                   strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                                <path strokeLinecap="round" strokeLinejoin="round"
+                                                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                                            </svg>
+                                        }
+                                    </div>
                                 </th>
                                 <th scope="col" className="px-6 py-3">
                                     Address
@@ -128,6 +180,7 @@ export default function Users({ auth }) {
                     <ul className="flex items-center gap-x-1 mt-10">
                         {meta.links.map((item, index) => (
                             <button
+                                key={index}
                                 disabled={item.url == null ? true : false}
                                 className={`${item.url == null ? 'text-gray-500 cursor-not-allowed' : 'text-gray-800'} w-16 h-9 rounded-lg flex items-center justify-center border bg-white`}
                                 onClick={() => setParams({...params, page: new URL(item.url).searchParams.get('page')})}

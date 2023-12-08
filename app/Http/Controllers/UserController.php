@@ -17,6 +17,10 @@ class UserController extends Controller
                 ->orWhere('username', 'LIKE', '%'.request()->q.'%');
         }
 
+        if(request()->has(['field','direction'])){
+            $query->orderBy(request()->field, request()->direction);
+        }
+
         $users = (
             UserResource::collection($query->paginate(request()->load))
         )->additional([
@@ -28,6 +32,8 @@ class UserController extends Controller
                     'load' => request()->load ?? 10,
                     'q' => request()->q ?? '',
                     'page' => request()->page ?? 1,
+                    'field' => request()->field ?? '',
+                    'direction' => request()->direction ?? '',
                 ],
             ]);
 
