@@ -1,1 +1,1 @@
-# Inertia React Datatable
+# Inertia React
