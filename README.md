@@ -1,1 +1,1 @@
-# Inertia React
+# Laravel Inertia React Datatable
